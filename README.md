@@ -1,3 +1,5 @@
+![NS3 version](https://img.shields.io/badge/NS--3-3.32-blueviolet?style=plastic)
+
 # Random Waypoint Mobility Model Test
 
 This repository holds the code that is used to run the ns-3 simulations to generate the data and produce the RWPM plots used for my thesis. 
