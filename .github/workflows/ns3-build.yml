@@ -14,5 +14,5 @@ jobs:
       with:
         location: 'scratch'
         #pre_run: 'pre.sh'
-        sim_name: 'thesis-plots'
-        #sim_args: '--run-time=900 --total-nodes=5'
+        sim_name: 'speedfalloff-plots'
+        sim_args: ''

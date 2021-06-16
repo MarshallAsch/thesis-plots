@@ -50,7 +50,7 @@ Reproducibility is one of the key goals of simulator studies.
  3. Clone this repository.
 
     ```sh
-    git clone git@github.com:marshallasch/thesis-plots.git plots
+    git clone git@github.com:marshallasch/speedfalloff-plots.git plots
     ```
 
 4. Change directory back to the `ns-3.32` folder of the source distribution
@@ -65,7 +65,7 @@ Reproducibility is one of the key goals of simulator studies.
 5. Run the example simulation that is included within the module.
 
    ```sh
-   ./waf --run 'scratch/plots/gen_trace' > dump.txt
+   ./waf --run 'scratch/plots/plots' > dump.txt
    ```
    
    This will produce an output file in the form of:
