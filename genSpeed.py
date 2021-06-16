@@ -50,7 +50,7 @@ def main():
 
     times = list(times)
 
-    plt.title(f'Average speed of {numNodes} over 4 hours of simulated time in a 1km x 1km area')
+    plt.title(f'Average speed of {numNodes} nodes over 4 hours of simulated time in a\n1km x 1km area using the Random Waypoint Mobility Model')
     plt.xlabel("time (s)")
     plt.ylabel("average speed (m/s)")
     plt.plot(times, speeds)
@@ -64,8 +64,8 @@ def main():
     plt.xlabel("x location (m)")
     plt.ylabel("y location (m)")
     plt.plot(locX, locY)
-    plt.plot(locX[0], locY[0], 'og')
-    plt.plot(locX[-1], locY[-1], 'or')
+    plt.plot(locX[0], locY[0], 'om')
+    plt.plot(locX[-1], locY[-1], 'vk')
     plt.axes([0,1000,0,1000])
     plt.savefig("trajectory.png", dpi=600)
 
