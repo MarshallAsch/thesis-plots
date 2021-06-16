@@ -15,4 +15,4 @@ jobs:
         location: 'scratch'
         #pre_run: 'pre.sh'
         sim_name: 'speedfalloff-plots'
-        sim_args: ''
+        sim_args: '--none'
