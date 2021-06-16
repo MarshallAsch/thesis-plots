@@ -17,6 +17,9 @@ This is a very simple simulation of 500 nodes in a 1km x 1km area that move arou
 
 ## Prereqs:
 
+`pip install matplotlib`
+
+
 If building netanim:
 - qt4-qmake
 - libqt4-dev
