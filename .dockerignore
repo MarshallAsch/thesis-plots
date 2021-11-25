@@ -1,0 +1,8 @@
+run-clang-format.py
+.clang-format
+.vscode
+.git
+.github
+.gitignore
+.dockerignore
+Dockerfile
