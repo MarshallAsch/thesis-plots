@@ -42,12 +42,18 @@
 #include "ns3/mobility-module.h"
 #include "ns3/netanim-module.h"
 
+#include "simulation-params.h"
+
+using namespace speedFalloff;
 using namespace ns3;
-bool verbose = true;
+
+ns3::Time ticTime;
 
 NS_LOG_COMPONENT_DEFINE("NS3 learning test");
 
 void tick(NodeContainer c) {
+  double current = Simulator::Now().GetNanoSeconds();
+
   for (NodeContainer::Iterator n = c.Begin(); n != c.End(); n++) {
     Ptr<Node> node = *n;
     uint32_t id = node->GetId();
@@ -56,12 +62,12 @@ void tick(NodeContainer c) {
     Vector pos = m->GetPosition();
     Vector vel = m->GetVelocity();
 
-    std::cout << "< time=\"" << Simulator::Now().GetNanoSeconds() << "\" node=\"" << id
-              << "\" locX=\"" << pos.x << "\" locY=\"" << pos.y << "\" velX=\"" << vel.x
-              << "\" velY=\"" << vel.y << "\" >" << std::endl;
+    std::cout << "< time=\"" << current << "\" node=\"" << id << "\" locX=\"" << pos.x
+              << "\" locY=\"" << pos.y << "\" velX=\"" << vel.x << "\" velY=\"" << vel.y << "\" >"
+              << std::endl;
   }
 
-  Simulator::Schedule(Seconds(1.0), &tick, c);
+  Simulator::Schedule(ticTime, &tick, c);
 }
 
 /**
@@ -70,74 +76,59 @@ void tick(NodeContainer c) {
  *
  */
 int main(int argc, char* argv[]) {
-  double simulationTime = 3600 * 4;  // seconds
-
-  int numNodes = 500;  // convert pop dencity to this num for 5k x 5k area
-  double max_y = 1000;
-  double max_x = 1000;
-
-  double min_speed = 0;
-  double max_speed = 30;
-  double min_pause = 0;
-  double max_pause = 0;
-
+  RngSeedManager::SetSeed(7);  // arbitrarily chosen
   Time::SetResolution(Time::NS);
 
-  // this will set a seed so that the same numbers are not generated each time.
-  // the run number should be incremented each time this simulation is run to ensure streams do not
-  // overlap
-  RngSeedManager::SetSeed(3);
-  RngSeedManager::SetRun(1);
+  /* Setup and parse the command line options. */
+  // Set up the command line options.
+  SimulationParameters params;
+  bool ok;
+  std::tie(params, ok) = SimulationParameters::parse(argc, argv);
 
-  // start loop here for number of runs
+  if (!ok) {
+    std::cerr << "Error parsing the parameters.\n";
+    return -1;
+  }
 
   // create node containers
   NodeContainer nodes;
-  nodes.Create(numNodes);
-
-  // create position allocator
-  Ptr<RandomRectanglePositionAllocator> positionAlloc =
-      CreateObject<RandomRectanglePositionAllocator>();
-
-  Ptr<RandomVariableStream> x = CreateObject<UniformRandomVariable>();
-  Ptr<RandomVariableStream> y = CreateObject<UniformRandomVariable>();
-  Ptr<RandomVariableStream> speed = CreateObject<UniformRandomVariable>();
-  Ptr<RandomVariableStream> pause = CreateObject<UniformRandomVariable>();
-
-  speed->SetAttribute("Min", DoubleValue(min_speed));
-  speed->SetAttribute("Max", DoubleValue(max_speed));
-
-  pause->SetAttribute("Min", DoubleValue(min_pause));
-  pause->SetAttribute("Max", DoubleValue(max_pause));
-
-  x->SetAttribute("Min", DoubleValue(0.0));
-  x->SetAttribute("Max", DoubleValue(max_x));
-
-  y->SetAttribute("Min", DoubleValue(0.0));
-  y->SetAttribute("Max", DoubleValue(max_y));
-
-  positionAlloc->SetX(x);
-  positionAlloc->SetY(y);
-  positionAlloc->SetZ(0.0);  // all of the nodes are at ground level, do I need to change this?
+  nodes.Create(params.totalNodes);
 
   // create mobility model
   MobilityHelper mobility;
+  mobility.SetPositionAllocator(params.area.getRandomRectanglePositionAllocator());
 
-  mobility.SetMobilityModel(
-      "ns3::RandomWaypointMobilityModel",
-      "Speed",
-      PointerValue(speed),
-      "Pause",
-      PointerValue(pause),
-      "PositionAllocator",
-      PointerValue(positionAlloc));
-  mobility.SetPositionAllocator(PointerValue(positionAlloc));
+  if (params.mobilityModel == SimulationParameters::Model::WALK) {
+    mobility.SetMobilityModel(
+        "ns3::RandomWalk2dMobilityModel",
+        "Bounds",
+        RectangleValue(params.area.asRectangle()),
+        "Speed",
+        PointerValue(params.velocity),
+        "Time",
+        TimeValue(params.changeTime),
+        "Distance",
+        DoubleValue(params.changeDistance),
+        "Mode",
+        EnumValue(params.walkMode));
+  } else if (params.mobilityModel == SimulationParameters::Model::WAYPOINT) {
+    mobility.SetMobilityModel(
+        "ns3::RandomWaypointMobilityModel",
+        "Speed",
+        PointerValue(params.velocity),
+        "Pause",
+        PointerValue(params.pauseTime),
+        "PositionAllocator",
+        PointerValue(params.area.getRandomRectanglePositionAllocator()));
+  }
 
   mobility.Install(nodes);
 
+  ticTime = params.ticTime;
+
   Simulator::Schedule(Seconds(0.0), &tick, nodes);
 
-  Simulator::Stop(Seconds(simulationTime));
+  Simulator::Stop(params.runtime);
   Simulator::Run();
   Simulator::Destroy();
 
