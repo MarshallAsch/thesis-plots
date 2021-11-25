@@ -52,7 +52,7 @@ ns3::Time ticTime;
 NS_LOG_COMPONENT_DEFINE("NS3 learning test");
 
 void tick(NodeContainer c) {
-  double current = Simulator::Now().GetNanoSeconds();
+  double current = Simulator::Now().GetSeconds();
 
   for (NodeContainer::Iterator n = c.Begin(); n != c.End(); n++) {
     Ptr<Node> node = *n;
@@ -62,9 +62,11 @@ void tick(NodeContainer c) {
     Vector pos = m->GetPosition();
     Vector vel = m->GetVelocity();
 
-    std::cout << "< time=\"" << current << "\" node=\"" << id << "\" locX=\"" << pos.x
-              << "\" locY=\"" << pos.y << "\" velX=\"" << vel.x << "\" velY=\"" << vel.y << "\" >"
-              << std::endl;
+    // std::cout << "< time=\"" << current << "\" node=\"" << id << "\" locX=\"" << pos.x
+    //           << "\" locY=\"" << pos.y << "\" velX=\"" << vel.x << "\" velY=\"" << vel.y << "\" >"
+    //           << std::endl;
+
+  std::cout << current << " " << id << " " << pos.x << " " << pos.y << " " << vel.x << " " << vel.y << std::endl;
   }
 
   Simulator::Schedule(ticTime, &tick, c);
