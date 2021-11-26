@@ -17,7 +17,7 @@ This is a very simple simulation of 500 nodes in a 1km x 1km area that move arou
 
 ## Prereqs:
 
-`pip install matplotlib sem seaborn numpy`
+`pip install matplotlib sem seaborn requests`
 
 
 If building netanim:
@@ -65,7 +65,7 @@ Reproducibility is one of the key goals of simulator studies.
 5. Run the example simulation that is included within the module.
 
    ```sh
-   ./waf --run 'scratch/speedfalloff-plots'
+   ./waf --run 'scratch/speedfalloff-plots/speedfalloff-plots'
    ```
    
    This will produce an output file in the form of:
@@ -76,7 +76,7 @@ Reproducibility is one of the key goals of simulator studies.
    ```
 
    There are a number of flags that can be given to change various parameters.
-   See `./waf --run 'scratch/speedfalloff-plots --help'` for the available options
+   See `./waf --run 'scratch/speedfalloff-plots/speedfalloff-plots --help'` for the available options
 
 
 ## Building the container
@@ -93,29 +93,64 @@ It is set to `debug` by default.
 
 In order to keep a version of the figure generator we have developed a prebuilt docker image that can be used to run the simulation without needing to install ns3 or any of its dependencies.
 
+The prebuilt docker container can be used in one of three ways:
+
+- interactivly using a `bash` shell
+- directly to run the simulation script with the desired flags
+- to run the SEM script directly to collect the results and generate the simulation plots
+
+
+### Interactive bash terminal
+
+The interactive shell will put you in the ns3 root directory.
+Depending on which docker image tag is used ns3 can either be built in debug mode or optimized mode.
+The simulation script has been pre installed in the `scratch` folder. 
+SEM has been installed and the sem runner scipt can be accessed in the parent directory.
 
 ```bash
-docker run --rm -it marshallasch/speedfalloff:optimized
-> ./waf --run "speedfalloff-plots"
+docker run --rm -it marshallasch/speedfalloff:optimized bash
+```
+
+
+### Directly run the simulation
+
+Any flags that are given to the container in the docker run command are passed directly to the waf script. 
+It is quivelent to running `./waf --run "scratch/speedfalloff-plots/speedfalloff-plots <my flags>"`.
+
+```bash
+docker run --rm  marshallasch/speedfalloff:optimized --runTime=5
+```
+
+### Collect the simulation results and generate the figues
+
+By giving the `sem` comand to the docker container the sem script will be run to collect the simulation results and generate the figures. 
+The results will be put into the `/results` directory, which can be mounted so the figures can be used. 
+
+```bash
+docker run --rm  -v "$(pwd)/results:/results" marshallasch/speedfalloff:optimized sem
 ```
 
 
 ## Generating the figures
 
-Currently the figures can be generated using the packaged [SEM](https://github.com/signetlabdei/sem) project script `simulation.py`.
+Alterntively you can run the [SEM](https://github.com/signetlabdei/sem) script manually by placing it in the parrent directory of the ns3-3.2 folder. 
+Some modifications will need to me made to the `simulation.py` script as it is developed to be used in the docker container.
+Specificly the location that it writes the files to should be modified. 
+
 To use it ns3 needs to be installed on the system and the script needs to be placed **outside** of the ns3 directory, as shown below.
 
+Note, this currently requires features from SEM that are only in the `develop` branch.
+
+
 ```
-/allinone2/
-         ns-3.32/
-                scratch/
-                       speedfalloff-plots/
-                                        ....
-/experiment/
-         simulation.py
+ns-3.32/
+  scratch/
+    speedfalloff-plots/
+      ....
+simulation.py
 ```
 
 This direcory scructture can be changed somewhat by editing the script, but it must be outside the directory.
-Then running `./simulation.py` from within the `experiment` directory will compile and run the simulations as well as generate the figures.
+Then running `./simulation.py` from the parrent directory will compile and run the simulations as well as generate the figures.
 
 

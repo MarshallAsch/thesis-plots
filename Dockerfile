@@ -13,13 +13,28 @@ LABEL org.opencontainers.image.title="Speed Falloff Plots"
 LABEL org.opencontainers.image.description="ns-3 simulation to generate mobility model speed falloff plots for Marshall Asch's Masters research"
 
 ARG BUILD_PROFILE=debug
+ENV BUILD_PROFILE=$BUILD_PROFILE
 
-ADD . scratch/plots
+VOLUME [ "/results" ]
 
+RUN apt-get update && apt-get install -y python3-pip
+
+RUN cd /opt && \
+    git clone https://github.com/signetlabdei/sem && \
+    cd sem && \
+    git checkout develop && \
+    pip install . && \
+    cd .. && \
+    rm -rf sem
+
+ADD . scratch/speedfalloff-plots
+RUN pip install -r scratch/speedfalloff-plots/requirements.txt
+
+RUN cp scratch/speedfalloff-plots/simulation.py ../simulation.py
 RUN ./waf configure --enable-examples --enable-tests --build-profile=${BUILD_PROFILE} && ./waf build
 
 
-ENTRYPOINT [ "/bin/bash" ]
+ENTRYPOINT [ "scratch/speedfalloff-plots/entrypoint.sh" ]
 
 
 # these two labels will change every time the container is built

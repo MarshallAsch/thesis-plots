@@ -26,9 +26,10 @@ from datetime import timedelta
 num_runs = 500
 experimentName = 'speedfalloff'
 
-ns_path = '../allinone2/ns-3.32'
+ns_path = 'ns-3.32'
 script = 'speedfalloff-plots'
 discord_url = os.environ.get('DISCORD_URL')
+optimized = os.environ.get('BUILD_PROFILE', 'optimized') == 'optimized' 
 
 
 param_combination = {
@@ -146,14 +147,14 @@ def runSimulation(campaign):
 ##############################
 
 if __name__ == "__main__":
-    campaign_dir = os.path.join(os.getcwd(), experimentName)
-    figure_dir = os.path.join(os.getcwd(), f'{experimentName}_figures')
+    campaign_dir = os.path.join('/results',  experimentName)
+    figure_dir = os.path.join('/results', f'{experimentName}_figures')
 
     if not os.path.exists(figure_dir):
         os.makedirs(figure_dir)
 
 
-    campaign = sem.CampaignManager.new(ns_path, script, campaign_dir, check_repo=False, max_parallel_processes=14)
+    campaign = sem.CampaignManager.new(ns_path, script, campaign_dir, check_repo=False, optimized=optimized)
 
     runSimulation(campaign)
     start = time.time()
