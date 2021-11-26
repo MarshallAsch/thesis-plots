@@ -1,5 +1,6 @@
-![Code linter on main](https://img.shields.io/github/workflow/status/marshallasch/speedfalloff-plots/Clang-format/main?style=plastic)
-![ns3 build checker on main](https://img.shields.io/github/workflow/status/marshallasch/speedfalloff-plots/build-ns3/main?style=plastic)
+[![Clang-format](https://github.com/MarshallAsch/speedfalloff-plots/actions/workflows/clang-format.yml/badge.svg)](https://github.com/MarshallAsch/speedfalloff-plots/actions/workflows/clang-format.yml)
+[![build-ns3](https://github.com/MarshallAsch/speedfalloff-plots/actions/workflows/ns3-build.yml/badge.svg)](https://github.com/MarshallAsch/speedfalloff-plots/actions/workflows/ns3-build.yml)
+[![Create Docker Container](https://github.com/MarshallAsch/speedfalloff-plots/actions/workflows/deployment.yml/badge.svg)](https://github.com/MarshallAsch/speedfalloff-plots/actions/workflows/deployment.yml)
 ![GitHub](https://img.shields.io/github/license/marshallasch/speedfalloff-plots?style=plastic)
 ![Lines of code](https://img.shields.io/tokei/lines/github/marshallasch/speedfalloff-plots?style=plastic)
 ![NS3 version](https://img.shields.io/badge/NS--3-3.32-blueviolet?style=plastic)
