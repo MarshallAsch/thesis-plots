@@ -107,8 +107,6 @@ def createPlot():
     plt.close()
 
 
-
-
 def getTimes(condition=lambda r: True):
     res = campaign.db.get_complete_results()
     times = [ r['meta']['elapsed_time'] for r in res if condition(r)]
