@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.authors="Marshall Asch <masch@uoguelph.ca> (https
 LABEL org.opencontainers.image.url="https://github.com/MarshallAsch/speedfalloff-plots.git"
 LABEL org.opencontainers.image.source="https://github.com/MarshallAsch/speedfalloff-plots.git"
 LABEL org.opencontainers.image.vendor="University of Guelph School of Computer Science"
-LABEL org.opencontainers.image.licenses="ISC"
+LABEL org.opencontainers.image.licenses="Apache-2.0"
 LABEL org.opencontainers.image.title="Speed Falloff Plots"
 LABEL org.opencontainers.image.description="ns-3 simulation to generate mobility model speed falloff plots for Marshall Asch's Masters research"
 
