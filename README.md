@@ -86,7 +86,7 @@ Reproducibility is one of the key goals of simulator studies.
 $ docker build --build-arg GIT_COMMIT=$(git rev-parse -q --verify HEAD) --build-arg BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ") -t marshallasch/speedfalloff:latest .
 ```
 
-The build varient can be configured using the `BUILD_PROFILE` `build-arg`, it can be set to either `debug`, `release`, or `optimized`.
+The build variant can be configured using the `BUILD_PROFILE` `build-arg`, it can be set to either `debug`, `release`, or `optimized`.
 It is set to `debug` by default.
 
 
@@ -96,7 +96,7 @@ In order to keep a version of the figure generator we have developed a prebuilt 
 
 The prebuilt docker container can be used in one of three ways:
 
-- interactivly using a `bash` shell
+- interactively using a `bash` shell
 - directly to run the simulation script with the desired flags
 - to run the SEM script directly to collect the results and generate the simulation plots
 
@@ -106,7 +106,7 @@ The prebuilt docker container can be used in one of three ways:
 The interactive shell will put you in the ns3 root directory.
 Depending on which docker image tag is used ns3 can either be built in debug mode or optimized mode.
 The simulation script has been pre installed in the `scratch` folder. 
-SEM has been installed and the sem runner scipt can be accessed in the parent directory.
+SEM has been installed and the sem runner script can be accessed in the parent directory.
 
 ```bash
 docker run --rm -it marshallasch/speedfalloff:optimized bash
@@ -116,7 +116,7 @@ docker run --rm -it marshallasch/speedfalloff:optimized bash
 ### Directly run the simulation
 
 Any flags that are given to the container in the docker run command are passed directly to the waf script. 
-It is quivelent to running `./waf --run "scratch/speedfalloff-plots/speedfalloff-plots <my flags>"`.
+It is equivalent to running `./waf --run "scratch/speedfalloff-plots/speedfalloff-plots <my flags>"`.
 
 ```bash
 docker run --rm  marshallasch/speedfalloff:optimized --runTime=5
@@ -124,7 +124,7 @@ docker run --rm  marshallasch/speedfalloff:optimized --runTime=5
 
 ### Collect the simulation results and generate the figues
 
-By giving the `sem` comand to the docker container the sem script will be run to collect the simulation results and generate the figures. 
+By giving the `sem` command to the docker container the sem script will be run to collect the simulation results and generate the figures. 
 The results will be put into the `/results` directory, which can be mounted so the figures can be used. 
 
 ```bash
@@ -134,9 +134,9 @@ docker run --rm  -v "$(pwd)/results:/results" marshallasch/speedfalloff:optimize
 
 ## Generating the figures
 
-Alterntively you can run the [SEM](https://github.com/signetlabdei/sem) script manually by placing it in the parrent directory of the ns3-3.2 folder. 
+Alternatively you can run the [SEM](https://github.com/signetlabdei/sem) script manually by placing it in the parent directory of the ns3-3.2 folder. 
 Some modifications will need to me made to the `simulation.py` script as it is developed to be used in the docker container.
-Specificly the location that it writes the files to should be modified. 
+Specifically the location that it writes the files to should be modified. 
 
 To use it ns3 needs to be installed on the system and the script needs to be placed **outside** of the ns3 directory, as shown below.
 
@@ -151,7 +151,5 @@ ns-3.32/
 simulation.py
 ```
 
-This direcory scructture can be changed somewhat by editing the script, but it must be outside the directory.
-Then running `./simulation.py` from the parrent directory will compile and run the simulations as well as generate the figures.
-
-
+This directory structure can be changed somewhat by editing the script, but it must be outside the directory.
+Then running `./simulation.py` from the parent directory will compile and run the simulations as well as generate the figures.
