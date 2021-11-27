@@ -29,10 +29,10 @@ experimentName = 'speedfalloff'
 ns_path = 'ns-3.32'
 script = 'speedfalloff-plots'
 discord_url = os.environ.get('DISCORD_URL')
-optimized = os.environ.get('BUILD_PROFILE', 'optimized') == 'optimized' 
+optimized = os.environ.get('BUILD_PROFILE', 'optimized') == 'optimized'
 
 
-param_combination = {
+param_waypoint = {
     'runTime': [4 * 60 * 60],
     'ticTime': [1],
     'totalNodes': [1],
@@ -44,6 +44,22 @@ param_combination = {
     'minPauseTime': [0],
     'maxPauseTime': [0],
     'changeTime': [0],
+    'changeDistance': [0],
+    'walkMode': ['time'],
+}
+
+param_walk = {
+    'runTime': [4 * 60 * 60],
+    'ticTime': [1],
+    'totalNodes': [1],
+    'areaWidth': 1000,
+    'areaLength': 1000,
+    'mobilityModel': ['walk'],
+    'minSpeed': [0],
+    'maxSpeed': [30],
+    'minPauseTime': [0],
+    'maxPauseTime': [0],
+    'changeTime': [10.0],
     'changeDistance': [0],
     'walkMode': ['time'],
 }
@@ -73,9 +89,9 @@ def sendNotification(message):
 
     print(message)
 
-def createPlot():
+def createWaypointPlot():
 
-    data = campaign.get_results_as_dataframe(get_all, params=param_combination)
+    data = campaign.get_results_as_dataframe(get_all, params=param_waypoint)
     p = sns.lineplot(data=data, x='Time', y='speed')
     p.set_title(f'Average speed of {num_runs} nodes over 4 hours of simulated time in a\n1km x 1km area using the Random Waypoint Mobility Model')
     p.set_ylabel("Node speed (m/s)")
@@ -87,23 +103,58 @@ def createPlot():
     plt.legend()
 
 
-    plt.savefig(os.path.join(figure_dir, f'speed decay.pdf'))
+    plt.savefig(os.path.join(figure_dir, f'random waypoint speed decay.pdf'))
     plt.clf()
     plt.close()
 
 
-    nodeId=10
+    nodeId=data.iloc[0]['RngRun']
     singleNode = data.query(f'RngRun == {nodeId} and nodeID == 0')
     #sns.lineplot(data=singleNode, x='posX', y='posY', sort=False, lw=1)
     plt.plot(singleNode['posX'], singleNode['posY'])
-    plt.title(f'Trajectory of node {nodeId} over a 4 hour simulation in a 1km x 1km area\n using the Random Waypoint Mobility Model')
+    plt.title(f'Trajectory of a node over a 4 hour simulation in a 1km x 1km area\n using the Random Waypoint Mobility Model')
     plt.xlabel("x location (m)")
     plt.ylabel("y location (m)")
     plt.plot(singleNode.iloc[0]['posX'], singleNode.iloc[0]['posY'], 'om', label='Start')
     plt.plot(singleNode.iloc[-1]['posX'], singleNode.iloc[-1]['posY'], 'vk', label='End')
     plt.legend()
 
-    plt.savefig(os.path.join(figure_dir, f'node {nodeId} trajectory.pdf'))
+    plt.savefig(os.path.join(figure_dir, f'random waypoint node {nodeId} trajectory.pdf'))
+    plt.clf()
+    plt.close()
+
+
+def createWalkPlot():
+
+    data = campaign.get_results_as_dataframe(get_all, params=param_walk)
+    p = sns.lineplot(data=data, x='Time', y='speed')
+    p.set_title(f'Average speed of {num_runs} nodes over 4 hours of simulated time in a\n1km x 1km area using the Random Walk Mobility Model')
+    p.set_ylabel("Node speed (m/s)")
+    p.set_xlabel("Time (s)")
+
+    avgSpeed = np.mean(data['speed'])
+
+    plt.axhline(y=avgSpeed, color='red', label=str(f'average velocity {avgSpeed} m/s'))
+    plt.legend()
+
+
+    plt.savefig(os.path.join(figure_dir, f'random walk speed decay.pdf'))
+    plt.clf()
+    plt.close()
+
+
+    nodeId=data.iloc[0]['RngRun']
+    singleNode = data.query(f'RngRun == {nodeId} and nodeID == 0')
+    #sns.lineplot(data=singleNode, x='posX', y='posY', sort=False, lw=1)
+    plt.plot(singleNode['posX'], singleNode['posY'])
+    plt.title(f'Trajectory of a node over a 4 hour simulation in a 1km x 1km area\n using the Random Walk Mobility Model')
+    plt.xlabel("x location (m)")
+    plt.ylabel("y location (m)")
+    plt.plot(singleNode.iloc[0]['posX'], singleNode.iloc[0]['posY'], 'om', label='Start')
+    plt.plot(singleNode.iloc[-1]['posX'], singleNode.iloc[-1]['posY'], 'vk', label='End')
+    plt.legend()
+
+    plt.savefig(os.path.join(figure_dir, f'random walk node {nodeId} trajectory.pdf'))
     plt.clf()
     plt.close()
 
@@ -128,6 +179,7 @@ def getRuntimeInfo():
 
 
 def runSimulation(campaign):
+    param_combination = [param_waypoint, param_walk]
     totalSims = len(sem.manager.list_param_combinations(param_combination)) * num_runs
     toRun = len(campaign.get_missing_simulations(sem.manager.list_param_combinations(param_combination), runs=num_runs))
     sendNotification(f'Starting simulations, {toRun} of {totalSims} simulations to run')
@@ -158,6 +210,7 @@ if __name__ == "__main__":
 
     runSimulation(campaign)
     start = time.time()
-    createPlot()
+    createWaypointPlot()
+    createWalkPlot()
     end = time.time()
     print(f'Figures generated in: {timedelta(seconds=end - start)}')

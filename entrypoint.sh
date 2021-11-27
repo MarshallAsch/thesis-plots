@@ -1,12 +1,10 @@
 #!/bin/bash
 
-echo "arg 1 ='$1'"
 if [[ "$1" == "bash" ]]; then
-    echo "drop into a bash shell"
     bash --init-file <(echo "ls; pwd")
     exit 0
-elif [[ "$1" == "sem" ]]; then 
-    echo "run sem script"
+elif [[ "$1" == "sem" ]]; then
+    echo "running sem script"
     cd ..
     mkdir -p /results
     ./simulation.py
@@ -16,4 +14,3 @@ else
     ./waf --run "scratch/speedfalloff-plots/speedfalloff-plots $@"
     exit $?
 fi
-
