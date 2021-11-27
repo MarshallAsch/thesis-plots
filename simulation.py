@@ -2,15 +2,7 @@
 
 #
 #   Note this script is not designed to be run from this directory this is here so that it can be shared with the rest
-#   of the lab group as an example. This should be run from outside of the ns3 folder, currently in an example folder
-#
-#  /
-#      ns-3-allinone/
-#          .....
-#      experiment/
-#          simulation.py
-#
-#   This script should be run from the experiment directory
+#   of the lab group as an example. This should be run from outside of the ns3 folder
 #
 
 import sem
