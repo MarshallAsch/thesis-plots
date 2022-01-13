@@ -20,13 +20,6 @@ VOLUME [ "/results" ]
 
 RUN apt-get update && apt-get install -y python3 python3-pip
 
-RUN cd /opt && \
-    git clone --depth 1 --branch develop https://github.com/signetlabdei/sem && \
-    cd sem && \
-    pip install . && \
-    cd .. && \
-    rm -rf sem
-
 COPY requirements.txt scratch/speedfalloff-plots/requirements.txt
 RUN pip install -r scratch/speedfalloff-plots/requirements.txt
 
